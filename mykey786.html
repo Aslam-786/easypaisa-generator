@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Key Maker Pro</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a2e; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .box { background: #16213e; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
+        h2 { color: #1ab76a; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: none; font-size: 16px; text-align: center; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        .btn-day { background: #e94560; color: white; }
+        .btn-month { background: #1ab76a; color: white; }
+        .result { background: #0f3460; padding: 15px; border-radius: 12px; border: 1px solid #00d2ff; display: none; margin-top: 15px; }
+        .key-text { color: #00d2ff; font-family: monospace; font-size: 16px; word-break: break-all; display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Key Maker Pro</h2>
+    <input type="text" id="user-device-id" placeholder="Enter User's Device ID">
+    
+    <button class="btn-day" onclick="generateKey(1)">Generate 1 Day Key</button>
+    <button class="btn-month" onclick="generateKey(30)">Generate 1 Month Key</button>
+
+    <div class="result" id="result-box">
+        <span class="key-text" id="final-key"></span>
+        <button style="background:#00d2ff; color:#16213e; padding:8px;" onclick="copyKey()">Copy Key</button>
+    </div>
+</div>
+
+<script>
+    const SALT = 786221;
+
+    function generateKey(days) {
+        let devID = document.getElementById('user-device-id').value;
+        if(!devID) { alert("Pehle User ka Device ID likhen!"); return; }
+
+        let dateObj = new Date();
+        dateObj.setDate(dateObj.getDate() + days);
+        let dateStr = dateObj.getFullYear() + String(dateObj.getMonth() + 1).padStart(2, '0') + String(dateObj.getDate()).padStart(2, '0');
+        
+        // Random number for uniqueness
+        let randNum = Math.floor(100 + Math.random() * 899);
+        
+        // Secure Signature (Date + Random + DeviceID)
+        let sig = (parseInt(dateStr) + parseInt(randNum) + parseInt(devID)) * 3 + SALT;
+        
+        let fullKey = `ADS-${dateStr}-${randNum}-${devID}-${sig}`;
+        
+        document.getElementById('final-key').innerText = fullKey;
+        document.getElementById('result-box').style.display = "block";
+    }
+
+    function copyKey() {
+        navigator.clipboard.writeText(document.getElementById('final-key').innerText);
+        alert("Key Copied!");
+    }
+</script>
+</body>
+</html>

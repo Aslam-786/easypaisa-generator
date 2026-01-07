@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Easypaisa Pro - Official Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1ab76a;
+            --primary-dark: #148f52;
+            --bg-gradient: linear-gradient(135deg, #1ab76a 0%, #0d5c35 100%);
+            --accent-color: #fbbf24;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f0f2f5;
+            background-image: radial-gradient(circle at 10% 20%, rgba(26, 183, 106, 0.05) 0%, transparent 90%),
+                              radial-gradient(circle at 90% 80%, rgba(26, 183, 106, 0.05) 0%, transparent 90%);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- MAIN CARD --- */
+        .main-card {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            background: var(--bg-gradient);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .card-header h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+        .card-header p { margin: 5px 0 0; font-size: 13px; opacity: 0.9; }
+
+        /* Device ID Box */
+        .device-id-box {
+            background: #f1f5f9;
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* Modes Info */
+        .modes-info {
+            padding: 20px 25px 0 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mode-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .mode-demo { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .mode-premium { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+        .card-body { padding: 20px 25px 30px 25px; }
+
+        .input-group { margin-bottom: 18px; position: relative; }
+        .input-group label { display: block; font-size: 12px; font-weight: 700; color: #444; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-group input { width: 100%; padding: 12px 15px; border: 2px solid #edf2f7; border-radius: 12px; font-size: 15px; color: #2d3748; transition: all 0.3s ease; outline: none; background: #f8fafc; }
+        .input-group input:focus { border-color: var(--primary-color); background: white; box-shadow: 0 0 0 4px rgba(26, 183, 106, 0.1); }
+
+        .premium-section {
+            background: #fffbeb;
+            border: 2px dashed #fcd34d;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 10px 0 25px 0;
+            text-align: center;
+        }
+
+        .premium-section label { color: #92400e; font-weight: 700; font-size: 13px; display: block; margin-bottom: 10px; }
+        .premium-section input { width: 100%; text-align: center; border: 2px solid #fde68a; padding: 12px; border-radius: 8px; font-weight: bold; color: #b45309; text-transform: uppercase; outline: none; }
+
+        .btn-submit {
+            background: var(--bg-gradient);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(26, 183, 106, 0.2);
+            transition: 0.3s;
+        }
+
+        .btn-submit:active { transform: scale(0.98); }
+
+        .footer-text { text-align: center; font-size: 11px; color: #a0aec0; margin-top: 20px; }
+    </style>
+</head>
+<body onload="getDeviceID()">
+
+    <div class="main-card">
+        <div class="card-header">
+            <h1>Official Generator</h1>
+            <p>Generate Professional HD Receipts Instantly</p>
+        </div>
+
+        <div class="device-id-box">
+            Your Device ID: <b id="my-device-id" style="color:#1ab76a;">...</b>
+            <div style="font-size:10px; margin-top:3px;">(Send this ID to Admin for Premium Key)</div>
+        </div>
+
+        <div class="modes-info">
+            <div class="mode-item mode-demo">
+                <span style="margin-right:10px;">📢</span> Demo Mode is active for all users
+            </div>
+            <div class="mode-item mode-premium">
+                <span style="margin-right:10px;">🌟</span> Premium Users (No Watermark)
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="input-group">
+                <label>Recipient Name</label>
+                <input type="text" id="in-name" placeholder="e.g. Sumera Bibi">
+            </div>
+
+            <div class="input-group">
+                <label>Recipient Mobile No.</label>
+                <input type="text" id="in-num" placeholder="0316 7743150">
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #edf2f7; margin: 20px 0;">
+
+            <div class="input-group">
+                <label>Sender Name</label>
+                <input type="text" id="in-sender" placeholder="e.g. Akhtar Naved">
+            </div>
+
+            <div class="input-group">
+                <label>Sender Mobile No.</label>
+                <input type="text" id="in-sender-num" placeholder="0300 4733766">
+            </div>
+
+            <div class="input-group">
+                <label>Transaction Amount (PKR)</label>
+                <input type="number" id="in-amt" value="1.00">
+            </div>
+
+            <div class="premium-section">
+                <label>Unlock Premium Mode</label>
+                <input type="text" id="sub-key" placeholder="ENTER SUBSCRIPTION KEY">
+            </div>
+
+            <button class="btn-submit" onclick="goToReceipt()">
+                Generate Receipt 🚀
+            </button>
+
+            <p class="footer-text">Secure & Private Generator • Version 4.0 Pro</p>
+        </div>
+    </div>
+
+    <script>
+        function getDeviceID() {
+            let id = localStorage.getItem('user_device_id');
+            if (!id) {
+                id = Math.floor(1000 + Math.random() * 9000);
+                localStorage.setItem('user_device_id', id);
+            }
+            document.getElementById('my-device-id').innerText = id;
+        }
+
+        function goToReceipt() {
+            sessionStorage.setItem('recName', document.getElementById('in-name').value || "Sumera Bibi");
+            sessionStorage.setItem('recNum', document.getElementById('in-num').value || "03167743150");
+            sessionStorage.setItem('sendName', document.getElementById('in-sender').value || "AKHTAR NAVED");
+            sessionStorage.setItem('sendNum', document.getElementById('in-sender-num').value || "03004733766");
+            sessionStorage.setItem('amount', document.getElementById('in-amt').value || "1.00");
+            sessionStorage.setItem('key', document.getElementById('sub-key').value);
+            sessionStorage.setItem('currentDeviceID', localStorage.getItem('user_device_id'));
+            
+            window.location.href = "receipt.html";
+        }
+    </script>
+</body>
+</html>

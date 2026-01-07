@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Generated Receipt</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --ep-green: #1ab76a; --text-grey: #757575; --text-dark: #000000; --frame-bg: #4a4a58; }
+        html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; background-color: #f2f2f2; font-family: 'Roboto', sans-serif; }
+        body { display: flex; flex-direction: column; align-items: center; padding: 20px 0 50px 0; }
+
+        .btn-download { background: var(--ep-green); color: white; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .receipt-container { width: 100%; display: flex; justify-content: center; align-items: center; }
+
+        #frame-wrapper { background-color: var(--frame-bg); width: 440px; padding: 15px 0; display: flex; flex-direction: column; align-items: center; border-radius: 30px 30px 0 0; flex-shrink: 0; position: relative; }
+
+        @media (max-width: 460px) {
+            #frame-wrapper { transform: scale(0.82); transform-origin: top center; margin-bottom: -80px; }
+        }
+
+        #receipt-capture { width: 385px; background: white; position: relative; padding: 25px 0 15px 0; box-shadow: 0 5px 25px rgba(0,0,0,0.4); overflow: visible; }
+        
+        /* --- DOTS SETUP EXACTLY AS PER YOUR ORIGINAL FILE --- */
+        .perforation { 
+            position: absolute; 
+            left: 0; 
+            width: 100%; 
+            height: 6px; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12.83' height='6'%3E%3Ccircle cx='6.41' cy='3' r='1.2' fill='%23ffffff'/%3E%3C/svg%3E"); 
+            background-repeat: repeat-x; 
+            z-index: 10; 
+        }
+        .perf-top { top: -3px; } 
+        .perf-bottom { bottom: -3px; }
+
+        /* --- TILED TEXT WATERMARK --- */
+        .text-watermark-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 150;
+            opacity: 0.18;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 80 80'%3E%3Ctext x='50%25' y='50%25' fill='%23000' font-family='Arial' font-size='9' font-weight='bold' text-anchor='middle' transform='rotate(-35 40 40)'%3EDemo Pro%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+
+        /* --- LARGE CIRCULAR UI STAMP --- */
+        #demo-watermark { 
+            position: absolute; 
+            top: 55%; 
+            left: 50%; 
+            transform: translate(-50%, -50%) rotate(-25deg); 
+            width: 280px; 
+            height: 280px; 
+            border: 8px double rgba(220, 38, 38, 0.2); 
+            border-radius: 50%; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            z-index: 200; 
+            pointer-events: none;
+            color: rgba(220, 38, 38, 0.25);
+            text-align: center;
+        }
+        
+        #demo-watermark .inner-text {
+            font-size: 38px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-top: 3px solid rgba(220, 38, 38, 0.15);
+            border-bottom: 3px solid rgba(220, 38, 38, 0.15);
+            padding: 8px 0;
+            letter-spacing: 3px;
+        }
+        
+        #demo-watermark .sub-text {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        .logo-container { width: 100%; display: flex; justify-content: center; margin: 5px 0 10px 0; }
+        .logo-img { height: 31.5px; width: auto; display: block; transform: scaleX(1.05); }
+
+        .funding-val { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+        .wallet-svg { width: 22px; height: 16px; display: block; }
+
+        .header { text-align: center; padding-top: 5px; position: relative; }
+        .close-btn { position: absolute; right: 18px; top: -5px; font-size: 22px; color: #333; font-weight: 300; }
+        
+        .check-circle { width: 50px; height: 50px; background: var(--ep-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+        .check-circle svg { width: 26px; fill: white; }
+
+        .status-title { color: var(--ep-green); font-size: 26.4px; font-weight: 500; margin: 3px 0; }
+        .status-sub { color: var(--text-grey); font-size: 13px; margin-bottom: 15px; }
+
+        .details-area { padding: 0 35px; }
+        .meta { color: var(--text-grey); font-size: 13.5px; line-height: 1.4; margin-bottom: 15px; border-top: 1px solid #f8f8f8; padding-top: 10px;}
+        .row { margin-bottom: 12px; }
+        .label { font-size: 16px; font-weight: 500; color: #1a1a1a; display: block; }
+        .val { font-size: 16px; color: var(--text-grey); display: block; }
+
+        #d-name, #d-acc-details { text-transform: capitalize; }
+        #d-sender { text-transform: uppercase; }
+
+        .amount-fee-stack { margin-bottom: 8px; }
+        .amount-fee-stack .label-small { font-size: 16px; font-weight: 500; color: #222; display: block; margin-bottom: 1px; }
+        .val-small { color: var(--text-grey); display: block; margin-bottom: 10px; }
+        #d-amt-1 { font-size: 18px; } 
+        #d-fee-val { font-size: 16.15px; }
+
+        .total-label { color: var(--ep-green); font-weight: 500; font-size: 18px; margin-bottom: 3px; display: block; }
+        .total-val { font-size: 20px; font-weight: 400; color: #1a1a1a; margin: 0; }
+
+        .footer { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 35px; 
+            margin-top: 25px; 
+            padding: 12px 0 12px 0; 
+            margin-right: -25px; 
+            border-top: 1px solid #f2f2f2; 
+        }
+        .icon-item { 
+            text-align: center; 
+            color: var(--text-grey); 
+            font-size: 10px; 
+            flex: 0 0 auto;
+        }
+        .icon-item svg { width: 22px; height: 22px; margin-bottom: 4px; opacity: 0.8; fill: #444; }
+    </style>
+</head>
+<body onload="renderReceipt()">
+
+    <button class="btn-download" onclick="downloadImage()">Download HD Screenshot</button>
+
+    <div class="receipt-container">
+        <div id="frame-wrapper">
+            <div id="receipt-capture">
+                <!-- Tiled Text Layer -->
+                <div id="text-watermark-layer" class="text-watermark-overlay"></div>
+                
+                <!-- Dots placed exactly inside receipt-capture as per your original file -->
+                <div class="perforation perf-top"></div>
+                <div class="perforation perf-bottom"></div>
+                
+                <!-- Circular UI Seal -->
+                <div id="demo-watermark">
+                    <span style="font-size: 14px; margin-bottom: 5px; font-weight: 900;">OFFICIAL DEMO</span>
+                    <div class="inner-text">DO NOT USE</div>
+                    <span class="sub-text">SECURITY VERIFIED</span>
+                </div>
+
+                <div class="header">
+                    <span class="close-btn">✕</span>
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    </div>
+                    <div class="logo-container"><img src="logo.png" class="logo-img"></div>
+                    <div class="status-title">Transaction Successful</div>
+                    <p class="status-sub">Money has been sent.</p>
+                </div>
+
+                <div class="details-area">
+                    <div class="meta">
+                        <span id="live-date">...</span> <br>
+                        ID#<span id="dynamic-id">...</span>
+                    </div>
+
+                    <div class="row">
+                        <span class="label">Funding Source</span>
+                        <div class="funding-val">
+                            <svg class="wallet-svg" viewBox="0 0 24 18" fill="none"><rect x="0.75" y="0.75" width="22.5" height="16.5" rx="3.25" stroke="#444" stroke-width="1.5"/><path d="M17 6H23.5V12H17C15.3431 12 14 10.6569 14 9V9C14 7.34315 15.3431 6 17 6Z" fill="white" stroke="#444" stroke-width="1.5"/><path d="M18.5 9.5C18.5 9.5 19 9.5 19 9C19 8.5 18.5 8.5 18.5 8.5" stroke="#1ab76a" stroke-width="2"/></svg>
+                            <span class="val">easypaisa Account</span>
+                        </div>
+                    </div>
+
+                    <div class="row"><span class="label">Sent to</span><span class="val" id="d-name"></span><span class="val" id="d-num"></span></div>
+                    <div class="row"><span class="label">Account Details</span><span class="val" id="d-acc-details"></span></div>
+                    <div class="row"><span class="label">Sent by</span><span class="val" id="d-sender"></span><span class="val" id="d-sender-num"></span></div>
+                    
+                    <div class="amount-fee-stack">
+                        <span class="label-small">Amount</span><span class="val-small" id="d-amt-1"></span>
+                        <span class="label-small">Fee / Charge</span><span class="val-small" id="d-fee-val">No Charge</span>
+                    </div>
+                    <span class="total-label">Total Amount</span>
+                    <p class="total-val">Rs. <span id="d-total"></span></p>
+
+                    <div class="footer">
+                        <div class="icon-item">
+                            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg><br>Share
+                        </div>
+                        <div class="icon-item">
+                            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg><br>Save to Gallery
+                        </div>
+                        <div class="icon-item">
+                            <svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3.5h-1.25V11H18V9.5h-1.25V13H15.25V7h4v1.5zM9 10h1V8.5H9V10zm5.5 2h1V8.5h-1V12zM6 6H4v16h16v-2H6V6z"/></svg><br>Save as PDF
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SALT = 786221;
+
+        function renderReceipt() {
+            const data = {
+                name: sessionStorage.getItem('recName'),
+                num: sessionStorage.getItem('recNum'),
+                sName: sessionStorage.getItem('sendName'),
+                sNum: sessionStorage.getItem('sendNum'),
+                amt: parseFloat(sessionStorage.getItem('amount') || 0).toFixed(2),
+                key: sessionStorage.getItem('key') || "",
+                currentDevice: sessionStorage.getItem('currentDeviceID')
+            };
+
+            document.getElementById('d-name').innerText = data.name;
+            document.getElementById('d-num').innerText = data.num;
+            document.getElementById('d-acc-details').innerText = data.name;
+            document.getElementById('d-sender').innerText = data.sName;
+            document.getElementById('d-sender-num').innerText = data.sNum;
+            document.getElementById('d-amt-1').innerText = data.amt;
+            document.getElementById('d-total').innerText = data.amt;
+
+            if (data.key.startsWith("ADS-")) {
+                let parts = data.key.split("-");
+                if (parts.length === 5) {
+                    let dateKey = parts[1];
+                    let randKey = parts[2];
+                    let deviceKey = parts[3];
+                    let userSig = parts[4];
+                    let expectedSig = (parseInt(dateKey) + parseInt(randKey) + parseInt(deviceKey)) * 3 + SALT;
+
+                    if (userSig == expectedSig && data.currentDevice == deviceKey) {
+                        let exp = new Date(dateKey.substring(0,4), dateKey.substring(4,6)-1, dateKey.substring(6,8));
+                        if (new Date() < exp) {
+                            document.getElementById('demo-watermark').style.display = "none";
+                            document.getElementById('text-watermark-layer').style.display = "none";
+                            let perfs = document.getElementsByClassName('perforation');
+                            for(let p of perfs) p.style.display = "none";
+                        }
+                    }
+                }
+            }
+            updatePKTime();
+            generateDynamicID();
+        }
+
+        function generateDynamicID() {
+            const startID = 44285821725;
+            const startDate = new Date('2026-01-05').getTime();
+            const now = Date.now();
+            const diffDays = Math.floor((now - startDate) / 86400000);
+            document.getElementById('dynamic-id').innerText = startID + (diffDays * 100000) + Math.floor((now % 86400000) / 1000 * 1.5);
+        }
+
+        function updatePKTime() {
+            const now = new Date();
+            const options = { day: '2-digit', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Karachi' };
+            const parts = new Intl.DateTimeFormat('en-GB', options).formatToParts(now);
+            
+            document.getElementById('live-date').innerText = `${parts.find(p => p.type === 'day').value} ${parts.find(p => p.type === 'month').value} ${parts.find(p => p.type === 'year').value} ${parts.find(p => p.type === 'hour').value}:${parts.find(p => p.type === 'minute').value} ${parts.find(p => p.type === 'dayPeriod').value.toUpperCase()}`;
+        }
+
+        function downloadImage() {
+            const target = document.querySelector("#frame-wrapper");
+            html2canvas(target, { 
+                scale: 3, 
+                useCORS: true, 
+                backgroundColor: "#4a4a58", 
+                onclone: (clonedDoc) => { clonedDoc.getElementById('frame-wrapper').style.transform = 'none'; } 
+            }).then(canvas => {
+                const link = document.createElement('a'); 
+                link.download = 'Easypaisa_HD_Receipt.png'; 
+                link.href = canvas.toDataURL("image/png"); 
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
